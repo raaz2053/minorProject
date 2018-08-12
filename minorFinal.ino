@@ -1,29 +1,28 @@
 
 #include<Servo.h>
+#include<Servo.h>
 #include <Adafruit_Fingerprint.h>
 #include <SoftwareSerial.h>
-SoftwareSerial mySerial(10, 11);
-SoftwareSerial mySerial1(12, 13); //gsm ko Tx to D8 and Rx to D9
-
+SoftwareSerial mySerial(10, 11); //fps ko tx,rx
+SoftwareSerial mySerial1(12, 13); //gsm ko Tx and Rx +
 Servo myservo;
 int pos = 0;
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
 void setup()
 {
-
+  pinMode(9, OUTPUT);
   Serial.begin(9600);
   mySerial1.begin(9600);   //gsmModule baud
   Serial.println("Keyless bike");
-  Serial.println("\n");
+  Serial.println("By");
   Serial.println("Raju Sharan");
   Serial.println("Samrat Malla");
   Serial.println("Subham Shrestha");
-  Serial.println("YuvRaj Panti");
+  Serial.println("YuvRaj Pant");
 
-  while (!Serial);  // For Yun/Leo/Micro/Zero/...
+  while (!Serial);
   delay(100);
-  Serial.println("\n\nAdafruit finger detect test");
   finger.begin(57600);
 
   if (finger.verifyPassword()) {
@@ -36,17 +35,16 @@ void setup()
   }
 
   finger.getTemplateCount();
-  Serial.print("Sensor contains "); Serial.print(finger.templateCount); Serial.println(" templates");
-  Serial.println("Waiting for valid finger...");
-  myservo.attach(9);
+  // Serial.print("Sensor contains "); Serial.print(finger.templateCount); Serial.println(" templates");
+  Serial.println("Waiting for valid finger............ \n \n ");
+  myservo.attach(8);
 }
 
-void loop()                     // run over and over again
+void loop()// run over and over again
 {
   getFingerprintIDez();
   digitalWrite(12, HIGH);
   delay(50);            //don't ned to run this at full speed.
-
 }
 
 uint8_t getFingerprintID() {
@@ -129,7 +127,7 @@ int getFingerprintIDez() {
 
   p = finger.fingerFastSearch();
   if (p != FINGERPRINT_OK) {
-    Serial.print("Oe gadha khatey... arkako bike chalauxas.. calling owner");
+    Serial.print("\t \t Fingerprint not matched.... calling owner");
     MakeCall();
   }
 
@@ -145,24 +143,27 @@ int getFingerprintIDez() {
     servo();
   }
   else if (finger.fingerID == 1) {
-    Serial.print("YuvRaj Panti");
+    Serial.print("YuvRaj Pant");
     servo();
   }
-  // Serial.print(finger.fingerID);
-  Serial.print(" with confidence of "); Serial.println(finger.confidence);
+  //Serial.print("\t \t Accuracy:"); Serial.println(finger.confidence);
   return finger.fingerID;
 }
-
 void MakeCall()
 {
-  mySerial1.println("ATD9848548444;"); // ATDxxxxxxxxxx; -- watch out here for semicolon at the end!!
-  delay(45000);
+  mySerial1.println("ATD9807918309;"); // ATDxxxxxxxxxx; -- watch out here for semicolon at the end!!
+  delay(20000);
   mySerial1.println("ATH");
 }
 
 void servo() {
-  for (pos = 0; pos <= 90; pos++) {
+  Serial.print("\n Activating Bike without keys \n");
+  Serial.print(" .\n .\n .\n .\n .\n .\n");
+  Serial.print("Unlocking Bike Handle with servo \n");
+  digitalWrite(9, 1);
+  for (pos = 0; pos <= 180; pos++) {
     myservo.write(pos);              // tell servo to go to position in variable 'pos'
     delay(15);                       // waits 15ms for the servo to reach the position
   }
+
 }
